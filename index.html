@@ -1,98 +1,173 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>نظام كاشير المسالخ</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    direction: rtl;
-    text-align: center;
-    padding: 20px;
-    background: #f3f6f9;
-  }
-  .section { display: none; }
-  .section.active { display: block; }
-  .blinking {
-    animation: blink 1.5s infinite;
-    font-size: 24px;
-    font-weight: bold;
-    color: #2c3e50;
-    margin-top: 100px;
-  }
-  @keyframes blink {
-    0%, 100% {opacity: 1;}
-    50% {opacity: 0;}
-  }
-  input, button {
-    font-size: 16px;
-    padding: 8px;
-    margin: 10px 5px;
-  }
-  button {
-    cursor: pointer;
-  }
-</style>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
+<!-- شاشة الوميض -->
 <div id="splash" class="section active">
   <h1 class="blinking">مرحباً بكم في نظام إدارة الفواتير بمسالخ الظفرة</h1>
 </div>
 
+<!-- شاشة تسجيل الدخول -->
 <div id="login" class="section">
   <h2>تسجيل الدخول</h2>
-  <input type="text" id="employeeId" placeholder="الرقم الوظيفي" />
+  <input type="text" id="employeeId" placeholder="الرقم الوظيفي" autocomplete="off" />
   <button onclick="login()">دخول</button>
+  <button onclick="closeProgram()">إلغاء</button>
 </div>
 
+<!-- لوحة التحكم الرئيسية -->
 <div id="dashboard" class="section">
   <h2>مرحباً <span id="username"></span></h2>
+  <button onclick="showSection('manageUsers')" class="adminOnly">إدارة المستخدمين</button>
+  <button onclick="showSection('settings')" class="adminOnly">الإعدادات</button>
+  <button onclick="showSection('dataEntry')">إدخال البيانات</button>
+  <button onclick="showSection('report')">تقرير المتعاملين</button>
   <button onclick="logout()">تسجيل خروج</button>
 </div>
 
-<script>
-  // بعد 2 ثانية ننتقل من شاشة الوميض لشاشة تسجيل الدخول
-  window.onload = () => {
-    setTimeout(() => {
-      showSection('login');
-    }, 2000);
-  };
+<!-- شاشة إدارة المستخدمين -->
+<div id="manageUsers" class="section">
+  <h2>إدارة المستخدمين</h2>
+  <table id="usersTable">
+    <thead>
+      <tr><th>الرقم الوظيفي</th><th>الاسم</th><th>الدور</th><th>الموقع</th><th>إجراءات</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <h3>إضافة مستخدم جديد</h3>
+  <input type="text" id="newUserId" placeholder="رقم وظيفي" autocomplete="off" />
+  <input type="text" id="newUserName" placeholder="اسم المستخدم" autocomplete="off" />
+  <select id="newUserRole">
+    <option value="admin">مسؤول</option>
+    <option value="user">مستخدم</option>
+  </select>
+  <select id="newUserSite"></select>
+  <button onclick="addUser()">إضافة</button>
+  <button onclick="showSection('dashboard')">رجوع</button>
+</div>
 
-  function showSection(id) {
-    document.querySelectorAll('.section').forEach(sec => {
-      sec.classList.remove('active');
-    });
-    document.getElementById(id).classList.add('active');
-  }
+<!-- شاشة الإعدادات -->
+<div id="settings" class="section">
+  <h2>الإعدادات</h2>
 
-  // بيانات مستخدمين افتراضية
-  const users = [
-    { id: "100", name: "مسؤول" },
-    { id: "200", name: "مستخدم1" }
-  ];
+  <h3>إدارة المواقع</h3>
+  <input type="text" id="newSite" placeholder="موقع جديد" autocomplete="off" />
+  <button onclick="addSite()">إضافة موقع</button>
+  <ul id="sitesList"></ul>
 
-  function login() {
-    const empId = document.getElementById('employeeId').value.trim();
-    if (!empId) {
-      alert('الرجاء إدخال الرقم الوظيفي');
-      return;
-    }
-    const user = users.find(u => u.id === empId);
-    if (!user) {
-      alert('المستخدم غير موجود');
-      return;
-    }
-    document.getElementById('username').textContent = user.name;
-    showSection('dashboard');
-  }
+  <h3>أنواع الذبائح</h3>
+  <input type="text" id="newAnimal" placeholder="نوع ذبيحة جديد" autocomplete="off" />
+  <button onclick="addAnimal()">إضافة نوع</button>
+  <ul id="animalsList"></ul>
 
-  function logout() {
-    document.getElementById('employeeId').value = '';
-    showSection('login');
-  }
-</script>
+  <h3>أنواع التقطيع</h3>
+  <input type="text" id="newCutting" placeholder="نوع تقطيع جديد" autocomplete="off" />
+  <button onclick="addCutting()">إضافة تقطيع</button>
+  <ul id="cuttingsList"></ul>
 
+  <h3>تعيين الأسعار</h3>
+  <label>نوع الذبيحة:</label>
+  <select id="priceAnimal"></select>
+  <label>نوع التقطيع:</label>
+  <select id="priceCutting"></select>
+  <input type="number" id="priceValue" placeholder="السعر" min="0" />
+  <button onclick="setPrice()">تعيين سعر</button>
+
+  <button onclick="showSection('dashboard')">رجوع</button>
+</div>
+
+<!-- شاشة إدخال البيانات -->
+<div id="dataEntry" class="section">
+  <h2 id="dataEntrySiteTitle" class="centered"></h2>
+
+  <label>رقم الفاتورة:</label>
+  <input type="text" id="invoiceNumber" readonly />
+
+  <label>رقم التليفون:</label>
+  <input type="text" id="phone" autocomplete="off" oninput="lookupClient()" />
+
+  <label>اسم المتعامل:</label>
+  <input type="text" id="clientName" autocomplete="off" />
+
+  <div class="inline-row">
+    <div class="inline-item">
+      <label>نوع الذبيحة:</label>
+      <select id="animalType" onchange="updatePrice()"></select>
+    </div>
+    <div class="inline-item">
+      <label>نوع التقطيع:</label>
+      <select id="cuttingType" onchange="updatePrice()"></select>
+    </div>
+    <div class="inline-item">
+      <label>رقم الذبيحة:</label>
+      <select id="animalNumber"></select>
+    </div>
+    <div class="inline-item">
+      <label>رقم الاستيكر:</label>
+      <select id="stickerNumber"></select>
+    </div>
+  </div>
+
+  <label>عدد الذبائح:</label>
+  <select id="quantity" onchange="updatePrice()"></select>
+
+  <label>طريقة الدفع:</label>
+  <label><input type="radio" name="paymentType" value="كاش" checked /> كاش</label>
+  <label><input type="radio" name="paymentType" value="بطاقة" /> بطاقة</label>
+
+  <label>سعر الوحدة:</label>
+  <input type="number" id="unitPrice" readonly />
+
+  <label>الإجمالي:</label>
+  <input type="number" id="totalPrice" readonly />
+
+  <button onclick="showInvoice()">معاينة الفاتورة</button>
+  <button onclick="saveData()">إضافة</button>
+  <button onclick="showSection('dashboard')">رجوع</button>
+</div>
+
+<!-- تقرير المتعاملين -->
+<div id="report" class="section">
+  <h2>تقرير المتعاملين</h2>
+  <table id="reportTable">
+    <thead>
+      <tr>
+        <th>الموقع</th><th>اسم المتعامل</th><th>رقم التليفون</th><th>رقم الفاتورة</th><th>نوع الذبيحة</th><th>نوع التقطيع</th><th>عدد الذبائح</th><th>طريقة الدفع</th><th>سعر الوحدة</th><th>الإجمالي</th><th>تاريخ الإدخال</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <button onclick="showSection('dashboard')">رجوع</button>
+</div>
+
+<!-- عرض الفاتورة -->
+<div id="invoicePreview" class="section invoice">
+  <h3>فاتورة</h3>
+  <table>
+    <tr><th>رقم الفاتورة</th><td id="invNo"></td></tr>
+    <tr><th>اسم المتعامل</th><td id="invClient"></td></tr>
+    <tr><th>رقم التليفون</th><td id="invPhone"></td></tr>
+    <tr><th>نوع الذبيحة</th><td id="invAnimalType"></td></tr>
+    <tr><th>نوع التقطيع</th><td id="invCuttingType"></td></tr>
+    <tr><th>عدد الذبائح</th><td id="invQty"></td></tr>
+    <tr><th>سعر الوحدة</th><td id="invUnitPrice"></td></tr>
+    <tr><th>الإجمالي</th><td id="invTotal"></td></tr>
+    <tr><th>طريقة الدفع</th><td id="invPaymentType"></td></tr>
+    <tr><th>تاريخ الإدخال</th><td id="invDate"></td></tr>
+  </table>
+  <button onclick="window.print()">🖨️ طباعة</button>
+  <button onclick="showSection('dataEntry')">رجوع</button>
+</div>
+
+<!-- الساعة -->
+<div id="clock"></div>
+
+<script src="script.js"></script>
 </body>
 </html>
