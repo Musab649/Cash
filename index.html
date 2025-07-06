@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>نظام كاشير المسالخ</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- شاشة البداية مع شعار -->
+<div id="splash" class="section active">
+  <img id="splashLogo" src="" alt="شعار" />
+  <h1 class="blinking">مرحباً بكم في نظام إدارة الفواتير بمسالخ الظفرة</h1>
+</div>
+
+<!-- تسجيل الدخول -->
+<div id="login" class="section">
+  <h2>تسجيل الدخول</h2>
+  <label>الرقم الوظيفي:</label>
+  <input type="text" id="employeeId" autocomplete="off" />
+  <button onclick="login()">دخول</button>
+</div>
+
+<!-- لوحة التحكم -->
+<div id="dashboard" class="section">
+  <h2>مرحباً <span id="username"></span></h2>
+  <button onclick="showSection('settings')">الإعدادات</button>
+  <button onclick="showSection('dataEntry')">إدخال البيانات</button>
+  <button onclick="showSection('report')">تقرير المتعاملين</button>
+  <button onclick="logout()">تسجيل خروج</button>
+</div>
+
+<!-- الإعدادات -->
+<div id="settings" class="section">
+  <h2>الإعدادات</h2>
+  
+  <label>اختر لون الخلفية:</label>
+  <input type="color" id="themeColor" />
+  <button onclick="saveColor()">حفظ اللون</button>
+  
+  <label>رفع شعار:</label>
+  <input type="file" id="logoUpload" accept="image/*" />
+  <button onclick="saveLogo()">حفظ الشعار</button>
+  
+  <button onclick="showSection('dashboard')">رجوع</button>
+</div>
+
+<!-- إدخال البيانات -->
+<div id="dataEntry" class="section">
+  <img id="dataLogo" class="small-logo" src="" alt="شعار" />
+  <h2>إدخال البيانات</h2>
+  <!-- عناصر إدخال البيانات -->
+  
+  <label>رقم الفاتورة:</label>
+  <input type="text" id="invoiceNumber" readonly />
+  
+  <label>رقم التليفون:</label>
+  <input type="text" id="phone" autocomplete="off" />
+  
+  <label>اسم المتعامل:</label>
+  <input type="text" id="clientName" autocomplete="off" />
+  
+  <div class="inline-row">
+    <div class="inline-item">
+      <label>نوع الذبيحة:</label>
+      <select id="animalType" onchange="updatePrice()"></select>
+    </div>
+    <div class="inline-item">
+      <label>نوع التقطيع:</label>
+      <select id="cuttingType" onchange="updatePrice()"></select>
+    </div>
+    <div class="inline-item">
+      <label>رقم الذبيحة:</label>
+      <select id="animalNumber"></select>
+    </div>
+    <div class="inline-item">
+      <label>رقم الاستيكر:</label>
+      <select id="stickerNumber"></select>
+    </div>
+  </div>
+  
+  <label>عدد الذبائح:</label>
+  <select id="quantity" onchange="updatePrice()"></select>
+  
+  <label>طريقة الدفع:</label>
+  <label><input type="radio" name="paymentType" value="كاش" checked /> كاش</label>
+  <label><input type="radio" name="paymentType" value="بطاقة" /> بطاقة</label>
+  
+  <label>سعر الوحدة:</label>
+  <input type="number" id="unitPrice" readonly />
+  
+  <label>الإجمالي:</label>
+  <input type="number" id="totalPrice" readonly />
+  
+  <button onclick="showInvoice()">معاينة الفاتورة</button>
+  <button onclick="saveData()">إضافة</button>
+  <button onclick="showSection('dashboard')">رجوع</button>
+</div>
+
+<!-- تقرير المتعاملين -->
+<div id="report" class="section">
+  <img id="reportLogo" class="small-logo" src="" alt="شعار" />
+  <h2>تقرير المتعاملين</h2>
+  
+  <table id="reportTable">
+    <thead>
+      <tr>
+        <th>الموقع</th>
+        <th>اسم المتعامل</th>
+        <th>رقم التليفون</th>
+        <th>رقم الفاتورة</th>
+        <th>نوع الذبيحة</th>
+        <th>نوع التقطيع</th>
+        <th>عدد الذبائح</th>
+        <th>طريقة الدفع</th>
+        <th>سعر الوحدة</th>
+        <th>الإجمالي</th>
+        <th>تاريخ الإدخال</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  
+  <button onclick="showSection('dashboard')">رجوع</button>
+</div>
+
+<!-- ساعة -->
+<div id="clock"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
