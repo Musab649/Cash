@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -16,85 +16,82 @@
 <!-- شاشة تسجيل الدخول -->
 <div id="login" class="section">
   <h2>تسجيل الدخول</h2>
-  <input type="text" id="employeeId" placeholder="الرقم الوظيفي" autocomplete="off" />
+  <label for="employeeId">الرقم الوظيفي:</label>
+  <input type="text" id="employeeId" autocomplete="off" />
   <button onclick="login()">دخول</button>
-  <button onclick="closeProgram()">إلغاء</button>
 </div>
 
-<!-- لوحة التحكم الرئيسية -->
+<!-- لوحة التحكم -->
 <div id="dashboard" class="section">
-  <h2>مرحباً <span id="username"></span></h2>
-  <button onclick="showSection('manageUsers')" class="adminOnly">إدارة المستخدمين</button>
-  <button onclick="showSection('settings')" class="adminOnly">الإعدادات</button>
+  <h2>مرحباً بك، <span id="username"></span></h2>
+  <button onclick="showSection('manageUsers')">إدارة المستخدمين</button>
+  <button onclick="showSection('settings')">الإعدادات</button>
   <button onclick="showSection('dataEntry')">إدخال البيانات</button>
   <button onclick="showSection('report')">تقرير المتعاملين</button>
   <button onclick="logout()">تسجيل خروج</button>
 </div>
 
-<!-- شاشة إدارة المستخدمين -->
+<!-- إدارة المستخدمين -->
 <div id="manageUsers" class="section">
-  <h2>إدارة المستخدمين</h2>
+  <h2>قائمة المستخدمين</h2>
   <table id="usersTable">
     <thead>
-      <tr><th>الرقم الوظيفي</th><th>الاسم</th><th>الدور</th><th>الموقع</th><th>إجراءات</th></tr>
+      <tr>
+        <th>رقم وظيفي</th>
+        <th>اسم المستخدم</th>
+        <th>الدور</th>
+        <th>الموقع</th>
+        <th>إجراءات</th>
+      </tr>
     </thead>
     <tbody></tbody>
   </table>
   <h3>إضافة مستخدم جديد</h3>
-  <input type="text" id="newUserId" placeholder="رقم وظيفي" autocomplete="off" />
-  <input type="text" id="newUserName" placeholder="اسم المستخدم" autocomplete="off" />
+  <label>رقم وظيفي:</label>
+  <input type="text" id="newUserId" autocomplete="off" />
+  <label>اسم المستخدم:</label>
+  <input type="text" id="newUserName" autocomplete="off" />
+  <label>الدور:</label>
   <select id="newUserRole">
     <option value="admin">مسؤول</option>
     <option value="user">مستخدم</option>
   </select>
+  <label>الموقع:</label>
   <select id="newUserSite"></select>
   <button onclick="addUser()">إضافة</button>
   <button onclick="showSection('dashboard')">رجوع</button>
 </div>
 
-<!-- شاشة الإعدادات -->
+<!-- الإعدادات -->
 <div id="settings" class="section">
   <h2>الإعدادات</h2>
-
-  <h3>إدارة المواقع</h3>
+  <h3>المواقع</h3>
   <input type="text" id="newSite" placeholder="موقع جديد" autocomplete="off" />
   <button onclick="addSite()">إضافة موقع</button>
   <ul id="sitesList"></ul>
-
   <h3>أنواع الذبائح</h3>
   <input type="text" id="newAnimal" placeholder="نوع ذبيحة جديد" autocomplete="off" />
   <button onclick="addAnimal()">إضافة نوع</button>
   <ul id="animalsList"></ul>
-
   <h3>أنواع التقطيع</h3>
   <input type="text" id="newCutting" placeholder="نوع تقطيع جديد" autocomplete="off" />
   <button onclick="addCutting()">إضافة تقطيع</button>
   <ul id="cuttingsList"></ul>
-
-  <h3>تعيين الأسعار</h3>
-  <label>نوع الذبيحة:</label>
-  <select id="priceAnimal"></select>
-  <label>نوع التقطيع:</label>
-  <select id="priceCutting"></select>
-  <input type="number" id="priceValue" placeholder="السعر" min="0" />
-  <button onclick="setPrice()">تعيين سعر</button>
-
+  <h3>تغيير لون الواجهة</h3>
+  <input type="color" id="colorPicker" value="#3498db" />
+  <button onclick="changeColor()">تغيير اللون</button>
   <button onclick="showSection('dashboard')">رجوع</button>
 </div>
 
-<!-- شاشة إدخال البيانات -->
+<!-- إدخال البيانات -->
 <div id="dataEntry" class="section">
   <h2 id="dataEntrySiteTitle" class="centered"></h2>
-
   <label>رقم الفاتورة:</label>
   <input type="text" id="invoiceNumber" readonly />
-
   <label>رقم التليفون:</label>
   <input type="text" id="phone" autocomplete="off" oninput="lookupClient()" />
-
   <label>اسم المتعامل:</label>
   <input type="text" id="clientName" autocomplete="off" />
-
   <div class="inline-row">
     <div class="inline-item">
       <label>نوع الذبيحة:</label>
@@ -113,20 +110,15 @@
       <select id="stickerNumber"></select>
     </div>
   </div>
-
   <label>عدد الذبائح:</label>
   <select id="quantity" onchange="updatePrice()"></select>
-
   <label>طريقة الدفع:</label>
   <label><input type="radio" name="paymentType" value="كاش" checked /> كاش</label>
   <label><input type="radio" name="paymentType" value="بطاقة" /> بطاقة</label>
-
   <label>سعر الوحدة:</label>
   <input type="number" id="unitPrice" readonly />
-
   <label>الإجمالي:</label>
   <input type="number" id="totalPrice" readonly />
-
   <button onclick="showInvoice()">معاينة الفاتورة</button>
   <button onclick="saveData()">إضافة</button>
   <button onclick="showSection('dashboard')">رجوع</button>
@@ -138,7 +130,17 @@
   <table id="reportTable">
     <thead>
       <tr>
-        <th>الموقع</th><th>اسم المتعامل</th><th>رقم التليفون</th><th>رقم الفاتورة</th><th>نوع الذبيحة</th><th>نوع التقطيع</th><th>عدد الذبائح</th><th>طريقة الدفع</th><th>سعر الوحدة</th><th>الإجمالي</th><th>تاريخ الإدخال</th>
+        <th>الموقع</th>
+        <th>اسم المتعامل</th>
+        <th>رقم التليفون</th>
+        <th>رقم الفاتورة</th>
+        <th>نوع الذبيحة</th>
+        <th>نوع التقطيع</th>
+        <th>عدد الذبائح</th>
+        <th>طريقة الدفع</th>
+        <th>سعر الوحدة</th>
+        <th>الإجمالي</th>
+        <th>تاريخ الإدخال</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -146,7 +148,7 @@
   <button onclick="showSection('dashboard')">رجوع</button>
 </div>
 
-<!-- عرض الفاتورة -->
+<!-- معاينة الفاتورة -->
 <div id="invoicePreview" class="section invoice">
   <h3>فاتورة</h3>
   <table>
@@ -165,7 +167,6 @@
   <button onclick="showSection('dataEntry')">رجوع</button>
 </div>
 
-<!-- الساعة -->
 <div id="clock"></div>
 
 <script src="script.js"></script>
