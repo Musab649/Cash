@@ -1,8 +1,7 @@
 let currentUser = null;
 
 let users = [
-  { id: "100", name: "مسؤول", role: "admin", site: "مسلخ غياثي" },
-  { id: "200", name: "مستخدم1", role: "user", site: "مسلخ مدينة" }
+  { id: "70062", name: "Musab Ali", role: "admin", site: "مسلخ مدينة غياثي" },
 ];
 
 let sites = ["مسلخ غياثي", "مسلخ مدينة"];
