@@ -1,22 +1,31 @@
-body {
-  font-family: Arial, sans-serif;
-  direction: rtl;
-  background: #f0f4f8;
-  color: #333;
-  padding: 20px;
-  margin: 0;
+* {
+  box-sizing: border-box;
+  margin: 0; padding: 0;
 }
 
-.section { display: none; }
-.section.active { display: block; }
+body {
+  font-family: 'Arial', sans-serif;
+  background: #f9f9f9;
+  color: #333;
+  direction: rtl;
+  padding: 20px;
+}
 
-.blinking {
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+}
+
+h1.blinking {
   animation: blinkingText 1.5s infinite;
-  font-size: 30px;
+  font-size: 28px;
   font-weight: bold;
-  text-align: center;
-  margin-top: 100px;
   color: #2c3e50;
+  text-align: center;
+  margin-top: 120px;
 }
 
 @keyframes blinkingText {
@@ -32,99 +41,65 @@ h2 {
 
 label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin: 10px 0 5px;
 }
 
 input[type="text"], input[type="number"], select {
-  width: 100%;
   padding: 8px;
-  font-size: 18px;
+  width: 100%;
   margin-bottom: 15px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 4px;
+  font-size: 15px;
 }
 
 button {
   background-color: #3498db;
-  border: none;
   color: white;
   padding: 10px 20px;
-  font-size: 18px;
-  border-radius: 6px;
+  border: none;
+  margin: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  margin-top: 10px;
-  display: block;
-  width: 100%;
+  transition: 0.3s;
 }
 
 button:hover {
   background-color: #2980b9;
 }
 
-#dashboard {
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table, th, td {
+  border: 1px solid #ccc;
+}
+
+th, td {
+  padding: 10px;
   text-align: center;
 }
 
-#dashboard button {
-  width: 200px;
-  margin: 10px auto;
-}
-
-.inline-row {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-  margin-bottom: 15px;
-}
-
-.inline-item {
-  flex: 1 1 150px;
-}
-
-.centered {
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-  margin-bottom: 20px;
+th {
+  background-color: #3498db;
+  color: white;
 }
 
 #clock {
   position: fixed;
   bottom: 10px;
   left: 10px;
-  font-weight: bold;
   background: #3498db;
-  color: white;
+  color: #fff;
   padding: 5px 10px;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 5px;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-ul li {
-  background: #ddd;
-  margin-bottom: 5px;
-  padding: 8px;
-  border-radius: 4px;
-}
-
-.invoice table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.invoice table th, .invoice table td {
-  border: 1px solid #ccc;
-  padding: 10px;
-  text-align: center;
-}
-
-.invoice table th {
-  background-color: #3498db;
-  color: Brown;
+.logo {
+  display: block;
+  margin: 0 auto 20px;
+  max-width: 120px;
 }
