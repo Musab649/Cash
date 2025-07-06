@@ -1,126 +1,80 @@
-let users = [
-  { id: "70062", name: "Musab Ali", role: "admin", site: "مسلخ مدينة غياثي" },
-  { id: "200", name: "مستخدم1", role: "user", site: "مسلخ مدينة غياثي" }
+let users = JSON.parse(localStorage.getItem("users")) || [
+  { id: "70062", name: "Musab Ali", role: "admin", site: "مسالخ مدن منطقة الظفرة" },
 ];
-
-let sites = ["مسلخ غياثي", "مسلخ مدينة"];
-let animals = ["خروف", "ماعز", "بقر", "جمل"];
-let cuttings = ["عزيمة", "ثلاجة"];
-let prices = {};
-let invoices = [];
+let sites = JSON.parse(localStorage.getItem("sites")) || [];
+let animals = JSON.parse(localStorage.getItem("animals")) || [];
+let cuttings = JSON.parse(localStorage.getItem("cuttings")) || [];
+let prices = JSON.parse(localStorage.getItem("prices")) || {};
+let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
 let currentUser = null;
-let invoiceCounter = 1;
+let invoiceCounter = parseInt(localStorage.getItem("invoiceCounter")) || 1;
 
-// بدء العمل
 window.onload = () => {
   showSection("splash");
-  setTimeout(() => {
-    showSection("login");
-  }, 3000);
+  setTimeout(() => showSection("login"), 2000);
   updateClock();
   setInterval(updateClock, 1000);
   populateInitialData();
+  loadLogo();
 };
 
-// تحديث الساعة والتاريخ
 function updateClock() {
   const clock = document.getElementById("clock");
   const now = new Date();
-  const timeStr = now.toLocaleTimeString("ar-EG", { hour12: false });
-  const dateStr = now.toLocaleDateString("ar-EG");
-  clock.textContent = `${dateStr} ${timeStr}`;
+  clock.textContent = now.toLocaleString("ar-EG");
 }
 
-// إظهار الشاشة المطلوبة
 function showSection(id) {
   document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
-// تهيئة البيانات الأولية
 function populateInitialData() {
+  fillSelect("newUserSite", sites);
+  fillSelect("priceAnimal", animals);
+  fillSelect("priceCutting", cuttings);
   fillSelect("animalType", animals);
   fillSelect("cuttingType", cuttings);
-  fillSelect("animalNumber", Array.from({ length: 50 }, (_, i) => i + 1));
-  fillSelect("stickerNumber", Array.from({ length: 100 }, (_, i) => i + 1));
-  fillSelect("quantity", Array.from({ length: 50 }, (_, i) => i + 1));
-  refreshUsersTable
-    refreshUsersTable();
-  refreshSitesList();
-  refreshAnimalsList();
-  refreshCuttingsList();
+  fillSelect("animalNumber", Array.from({length: 50}, (_, i) => i + 1));
+  fillSelect("stickerNumber", Array.from({length: 50}, (_, i) => i + 1));
+  fillSelect("quantity", Array.from({length: 50}, (_, i) => i + 1));
+  refreshUsersTable();
+  refreshLists();
   updateInvoiceNumber();
 }
 
 function fillSelect(id, items) {
-  const select = document.getElementById(id);
-  select.innerHTML = "";
-  items.forEach(item => {
-    const option = document.createElement("option");
-    option.value = item;
-    option.textContent = item;
-    select.appendChild(option);
+  const sel = document.getElementById(id);
+  sel.innerHTML = "";
+  items.forEach(it => {
+    let opt = document.createElement("option");
+    opt.textContent = it;
+    opt.value = it;
+    sel.appendChild(opt);
   });
 }
 
-function updateInvoiceNumber() {
-  document.getElementById("invoiceNumber").value = invoiceCounter.toString().padStart(5, "0");
-}
-
-function login() {
-  const empId = document.getElementById("employeeId").value.trim();
-  if (!empId) {
-    alert("الرجاء إدخال الرقم الوظيفي");
-    return;
-  }
-  const user = users.find(u => u.id === empId);
-  if (!user) {
-    alert("المستخدم غير موجود");
-    return;
-  }
-  currentUser = user;
-  document.getElementById("username").textContent = user.name;
-  setupDataEntrySite();
-  showSection("dashboard");
-  clearDataEntryForm();
-}
-
-function logout() {
-  currentUser = null;
-  showSection("login");
-}
-
-function setupDataEntrySite() {
-  const title = document.getElementById("dataEntrySiteTitle");
-  if (currentUser.role === "admin") {
-    title.textContent = "كل المواقع متاحة للمسؤول";
-  } else {
-    title.textContent = `الموقع: ${currentUser.site}`;
-  }
+function refreshLists() {
+  document.getElementById("sitesList").innerHTML = sites.map(s => `<li>${s}</li>`).join("");
+  document.getElementById("animalsList").innerHTML = animals.map(a => `<li>${a}</li>`).join("");
+  document.getElementById("cuttingsList").innerHTML = cuttings.map(c => `<li>${c}</li>`).join("");
 }
 
 function refreshUsersTable() {
-  const tbody = document.querySelector("#usersTable tbody");
-  tbody.innerHTML = "";
-  users.forEach((u, index) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${u.id}</td>
-      <td>${u.name}</td>
-      <td>${u.role}</td>
-      <td>${u.site}</td>
-      <td><button onclick="deleteUser(${index})">حذف</button></td>
-    `;
-    tbody.appendChild(tr);
-  });
-  fillSelect("newUserSite", sites);
+  const t = document.getElementById("usersTable");
+  t.innerHTML = `<tr><th>رقم</th><th>اسم</th><th>دور</th><th>موقع</th></tr>` +
+    users.map(u => `<tr><td>${u.id}</td><td>${u.name}</td><td>${u.role}</td><td>${u.site}</td></tr>`).join("");
 }
 
-function deleteUser(index) {
-  if (confirm("هل أنت متأكد من الحذف؟")) {
-    users.splice(index, 1);
-    refreshUsersTable();
-  }
+function login() {
+  const id = document.getElementById("employeeId").value.trim();
+  const u = users.find(x => x.id === id);
+  if (!u) return alert("غير موجود");
+  currentUser = u;
+  document.getElementById("username").textContent = u.name;
+  document.getElementById("dataEntrySiteTitle").textContent = u.role === "admin" ? "كل المواقع" : `الموقع: ${u.site}`;
+  showSection("dashboard");
+  updateInvoiceNumber();
 }
 
 function addUser() {
@@ -128,167 +82,126 @@ function addUser() {
   const name = document.getElementById("newUserName").value.trim();
   const role = document.getElementById("newUserRole").value;
   const site = document.getElementById("newUserSite").value;
-
-  if (!id || !name) {
-    alert("يرجى إدخال جميع البيانات");
-    return;
-  }
   users.push({ id, name, role, site });
+  saveAll();
   refreshUsersTable();
 }
 
 function addSite() {
-  const site = document.getElementById("newSite").value.trim();
-  if (site && !sites.includes(site)) {
-    sites.push(site);
-    refreshSitesList();
-    refreshUsersTable();
-  }
-}
-
-function refreshSitesList() {
-  const list = document.getElementById("sitesList");
-  list.innerHTML = "";
-  sites.forEach(s => {
-    const li = document.createElement("li");
-    li.textContent = s;
-    list.appendChild(li);
-  });
+  const s = document.getElementById("newSite").value.trim();
+  if (s && !sites.includes(s)) sites.push(s);
+  saveAll();
+  populateInitialData();
 }
 
 function addAnimal() {
-  const animal = document.getElementById("newAnimal").value.trim();
-  if (animal && !animals.includes(animal)) {
-    animals.push(animal);
-    refreshAnimalsList();
-    populateInitialData();
-  }
-}
-
-function refreshAnimalsList() {
-  const list = document.getElementById("animalsList");
-  list.innerHTML = "";
-  animals.forEach(a => {
-    const li = document.createElement("li");
-    li.textContent = a;
-    list.appendChild(li);
-  });
+  const a = document.getElementById("newAnimal").value.trim();
+  if (a && !animals.includes(a)) animals.push(a);
+  saveAll();
+  populateInitialData();
 }
 
 function addCutting() {
-  const cutting = document.getElementById("newCutting").value.trim();
-  if (cutting && !cuttings.includes(cutting)) {
-    cuttings.push(cutting);
-    refreshCuttingsList();
-    populateInitialData();
-  }
-}
-
-function refreshCuttingsList() {
-  const list = document.getElementById("cuttingsList");
-  list.innerHTML = "";
-  cuttings.forEach(c => {
-    const li = document.createElement("li");
-    li.textContent = c;
-    list.appendChild(li);
-  });
-}
-
-function changeColor() {
-  const color = document.getElementById("colorPicker").value;
-  document.documentElement.style.setProperty('--main-color', color);
-  document.querySelectorAll("button").forEach(btn => btn.style.backgroundColor = color);
+  const c = document.getElementById("newCutting").value.trim();
+  if (c && !cuttings.includes(c)) cuttings.push(c);
+  saveAll();
+  populateInitialData();
 }
 
 function setPrice() {
-  const animal = document.getElementById("priceAnimal").value;
-  const cutting = document.getElementById("priceCutting").value;
-  const price = parseFloat(document.getElementById("priceValue").value);
-  if (animal && cutting && price > 0) {
-    prices[`${animal}_${cutting}`] = price;
-    alert(`تم تعيين السعر: ${price}`);
-  }
+  const a = document.getElementById("priceAnimal").value;
+  const c = document.getElementById("priceCutting").value;
+  const p = parseFloat(document.getElementById("priceValue").value);
+  if (a && c) prices[`${a}_${c}`] = p;
+  saveAll();
 }
 
 function updatePrice() {
-  const animal = document.getElementById("animalType").value;
-  const cutting = document.getElementById("cuttingType").value;
-  const qty = parseInt(document.getElementById("quantity").value || 1);
-  const price = prices[`${animal}_${cutting}`] || 0;
-  document.getElementById("unitPrice").value = price;
-  document.getElementById("totalPrice").value = price * qty;
-}
-
-function lookupClient() {
-  // يمكن إضافة منطق لاحقاً لحفظ العملاء
+  const a = document.getElementById("animalType").value;
+  const c = document.getElementById("cuttingType").value;
+  const q = parseInt(document.getElementById("quantity").value) || 1;
+  const unit = prices[`${a}_${c}`] || 0;
+  document.getElementById("unitPrice").value = unit;
+  document.getElementById("totalPrice").value = unit * q;
 }
 
 function saveData() {
-  const phone = document.getElementById("phone").value.trim();
-  const client = document.getElementById("clientName").value.trim();
-  const animal = document.getElementById("animalType").value;
-  const cutting = document.getElementById("cuttingType").value;
-  const qty = parseInt(document.getElementById("quantity").value);
-  const unitPrice = parseFloat(document.getElementById("unitPrice").value);
-  const totalPrice = parseFloat(document.getElementById("totalPrice").value);
-  const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
-
-  const invoice = {
-    site: currentUser.site || "إداري",
-    client, phone,
-    invoiceNo: invoiceCounter,
-    animal, cutting,
-    qty, unitPrice, totalPrice, paymentType,
-    date: new Date().toLocaleString("ar-EG")
+  const data = {
+    site: currentUser.site,
+    name: document.getElementById("clientName").value,
+    phone: document.getElementById("phone").value,
+    invoice: document.getElementById("invoiceNumber").value,
+    animal: document.getElementById("animalType").value,
+    cutting: document.getElementById("cuttingType").value,
+    qty: document.getElementById("quantity").value,
+    unit: document.getElementById("unitPrice").value,
+    total: document.getElementById("totalPrice").value,
+    payment: document.querySelector('input[name="paymentType"]:checked').value,
+    date: new Date().toLocaleDateString()
   };
-
-  invoices.push(invoice);
-  addToReport(invoice);
+  invoices.push(data);
   invoiceCounter++;
+  saveAll();
   updateInvoiceNumber();
-  alert("تم حفظ الفاتورة بنجاح");
-  clearDataEntryForm();
 }
 
-function clearDataEntryForm() {
-  document.getElementById("phone").value = "";
-  document.getElementById("clientName").value = "";
-  document.getElementById("quantity").value = "1";
-  document.getElementById("unitPrice").value = "";
-  document.getElementById("totalPrice").value = "";
-}
-
-function addToReport(invoice) {
-  const tbody = document.querySelector("#reportTable tbody");
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td>${invoice.site}</td>
-    <td>${invoice.client}</td>
-    <td>${invoice.phone}</td>
-    <td>${invoice.invoiceNo}</td>
-    <td>${invoice.animal}</td>
-    <td>${invoice.cutting}</td>
-    <td>${invoice.qty}</td>
-    <td>${invoice.paymentType}</td>
-    <td>${invoice.unitPrice}</td>
-    <td>${invoice.totalPrice}</td>
-    <td>${invoice.date}</td>
-  `;
-  tbody.appendChild(tr);
+function updateInvoiceNumber() {
+  document.getElementById("invoiceNumber").value = String(invoiceCounter).padStart(5, "0");
 }
 
 function showInvoice() {
-  document.getElementById("invNo").textContent = document.getElementById("invoiceNumber").value;
-  document.getElementById("invClient").textContent = document.getElementById("clientName").value;
-  document.getElementById("invPhone").textContent = document.getElementById("phone").value;
-  document.getElementById("invAnimalType").textContent = document.getElementById("animalType").value;
-  document.getElementById("invCuttingType").textContent = document.getElementById("cuttingType").value;
-  document.getElementById("invQty").textContent = document.getElementById("quantity").value;
-  document.getElementById("invUnitPrice").textContent = document.getElementById("unitPrice").value;
-  document.getElementById("invTotal").textContent = document.getElementById("totalPrice").value;
+  const id = s => document.getElementById(s).value;
+  document.getElementById("invNo").textContent = id("invoiceNumber");
+  document.getElementById("invClient").textContent = id("clientName");
+  document.getElementById("invPhone").textContent = id("phone");
+  document.getElementById("invAnimalType").textContent = id("animalType");
+  document.getElementById("invCuttingType").textContent = id("cuttingType");
+  document.getElementById("invQty").textContent = id("quantity");
+  document.getElementById("invUnitPrice").textContent = id("unitPrice");
+  document.getElementById("invTotal").textContent = id("totalPrice");
   document.getElementById("invPaymentType").textContent = document.querySelector('input[name="paymentType"]:checked').value;
-  document.getElementById("invDate").textContent = new Date().toLocaleString("ar-EG");
-
+  document.getElementById("invDate").textContent = new Date().toLocaleDateString();
   showSection("invoicePreview");
 }
-  
+
+function logout() {
+  currentUser = null;
+  showSection("login");
+}
+
+function saveAll() {
+  localStorage.setItem("users", JSON.stringify(users));
+  localStorage.setItem("sites", JSON.stringify(sites));
+  localStorage.setItem("animals", JSON.stringify(animals));
+  localStorage.setItem("cuttings", JSON.stringify(cuttings));
+  localStorage.setItem("prices", JSON.stringify(prices));
+  localStorage.setItem("invoices", JSON.stringify(invoices));
+  localStorage.setItem("invoiceCounter", invoiceCounter);
+}
+
+function closeProgram() {
+  alert("شكرًا لاستخدامك النظام");
+  window.close();
+}
+
+function changeColor() {
+  document.body.style.background = document.getElementById("colorPicker").value;
+}
+
+function uploadLogo() {
+  const file = document.getElementById("logoUploader").files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    localStorage.setItem("logo", e.target.result);
+    loadLogo();
+  };
+  reader.readAsDataURL(file);
+}
+
+function loadLogo() {
+  const logo = localStorage.getItem("logo");
+  if (logo) {
+    document.getElementById("logoPreview").src = logo;
+  }
+}
