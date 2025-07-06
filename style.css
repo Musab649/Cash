@@ -1,98 +1,74 @@
-/* style.css */
-
 body {
-  font-family: 'Arial', sans-serif;
-  background: #f9faff;
-  color: #333;
+  font-family: Arial, sans-serif;
   direction: rtl;
+  background: #f0f4f8;
+  color: #333;
   padding: 20px;
   margin: 0;
-  box-sizing: border-box;
-  min-height: 100vh;
-  position: relative;
 }
 
-.section {
-  display: none;
-}
-
-.section.active {
-  display: block;
-}
+.section { display: none; }
+.section.active { display: block; }
 
 .blinking {
-  animation: blink 1.5s infinite;
-  font-size: 28px;
+  animation: blinkingText 1.5s infinite;
+  font-size: 30px;
   font-weight: bold;
-  color: #2c3e50;
   text-align: center;
   margin-top: 100px;
+  color: #2c3e50;
 }
 
-@keyframes blink {
-  0%, 100% {opacity: 1;}
-  50% {opacity: 0;}
+@keyframes blinkingText {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 h2 {
+  text-align: center;
   margin-bottom: 20px;
   color: #2c3e50;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
   font-weight: bold;
-  text-align: center;
 }
 
 input[type="text"], input[type="number"], select {
   width: 100%;
-  padding: 10px 12px;
-  font-size: 16px;
+  padding: 8px;
+  font-size: 18px;
+  margin-bottom: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  margin-bottom: 15px;
-  box-sizing: border-box;
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-input[type="text"]:focus, input[type="number"]:focus, select:focus {
-  border-color: #3498db;
 }
 
 button {
   background-color: #3498db;
   border: none;
   color: white;
-  padding: 10px 18px;
-  margin: 5px 3px;
-  cursor: pointer;
+  padding: 10px 20px;
+  font-size: 18px;
   border-radius: 6px;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
+  cursor: pointer;
+  margin-top: 10px;
+  display: block;
+  width: 100%;
 }
 
 button:hover {
   background-color: #2980b9;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 15px;
-}
-
-table th, table td {
-  border: 1px solid #ccc;
-  padding: 10px;
+#dashboard {
   text-align: center;
-  font-size: 14px;
 }
 
-table th {
-  background-color: #3498db;
-  color: white;
-}
-
-table tr:hover {
-  background-color: #ecf0f1;
+#dashboard button {
+  width: 200px;
+  margin: 10px auto;
 }
 
 .inline-row {
@@ -108,7 +84,7 @@ table tr:hover {
 
 .centered {
   text-align: center;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
   margin-bottom: 20px;
 }
@@ -120,29 +96,35 @@ table tr:hover {
   font-weight: bold;
   background: #3498db;
   color: white;
-  padding: 5px 12px;
+  padding: 5px 10px;
   border-radius: 8px;
   font-size: 16px;
 }
 
-.adminOnly {
-  display: none;
+ul {
+  list-style: none;
+  padding: 0;
 }
 
-/* إظهار أزرار المسؤول فقط */
-.admin-active .adminOnly {
-  display: inline-block;
+ul li {
+  background: #ddd;
+  margin-bottom: 5px;
+  padding: 8px;
+  border-radius: 4px;
 }
 
 .invoice table {
-  margin: 0 auto;
-  width: 90%;
-  max-width: 600px;
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.invoice th {
-  width: 40%;
-  text-align: left;
-  background-color: #2980b9;
-  color: white;
+.invoice table th, .invoice table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.invoice table th {
+  background-color: #3498db;
+  color: Brown;
 }
