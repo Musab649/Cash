@@ -1,28 +1,24 @@
-// script.js
-
-// بيانات المستخدمين (تقدر تضيف أو تعدل هنا أو في الإعدادات)
 let users = [
-  { id: "70062", name: "Musab ALi", role: "admin", site: "مسلخ مدينة غياثي" },
+  { id: "70062", name: "Musab Ali", role: "admin", site: "مسلخ مدينة غياثي" },
+  { id: "200", name: "مستخدم1", role: "user", site: "مسلخ مدينة غياثي" }
 ];
 
-// بيانات المواقع، الذبائح، التقطيع، والأسعار
 let sites = ["مسلخ غياثي", "مسلخ مدينة"];
 let animals = ["خروف", "ماعز", "بقر", "جمل"];
 let cuttings = ["عزيمة", "ثلاجة"];
-let prices = {}; // prices[animal][cutting] = السعر
-
+let prices = {};
 let invoices = [];
 let currentUser = null;
 let invoiceCounter = 1;
 
-// تشغيل البرنامج
+// بدء العمل
 window.onload = () => {
   showSection("splash");
-  setTimeout(() => showSection("login"), 2000);
-
+  setTimeout(() => {
+    showSection("login");
+  }, 3000);
   updateClock();
   setInterval(updateClock, 1000);
-
   populateInitialData();
 };
 
@@ -35,74 +31,65 @@ function updateClock() {
   clock.textContent = `${dateStr} ${timeStr}`;
 }
 
-// إظهار قسم معين وإخفاء الباقي
+// إظهار الشاشة المطلوبة
 function showSection(id) {
-  document.querySelectorAll(".section").forEach((sec) => sec.classList.remove("active"));
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
-
-  // إذا المسؤول داخل، نعرض أزرار المسؤول
-  if (currentUser && currentUser.role === "admin") {
-    document.body.classList.add("admin-active");
-  } else {
-    document.body.classList.remove("admin-active");
-  }
 }
 
 // تهيئة البيانات الأولية
 function populateInitialData() {
-  fillSelect("priceAnimal", animals);
-  fillSelect("priceCutting", cuttings);
   fillSelect("animalType", animals);
   fillSelect("cuttingType", cuttings);
   fillSelect("animalNumber", Array.from({ length: 50 }, (_, i) => i + 1));
   fillSelect("stickerNumber", Array.from({ length: 100 }, (_, i) => i + 1));
   fillSelect("quantity", Array.from({ length: 50 }, (_, i) => i + 1));
-
-  refreshUsersTable();
+  refreshUsersTable
+    refreshUsersTable();
   refreshSitesList();
   refreshAnimalsList();
   refreshCuttingsList();
   updateInvoiceNumber();
-  setupNewUserSiteSelect();
 }
 
-// تعبئة قوائم الاختيار (Select)
 function fillSelect(id, items) {
   const select = document.getElementById(id);
   select.innerHTML = "";
-  items.forEach((item) => {
-    let option = document.createElement("option");
+  items.forEach(item => {
+    const option = document.createElement("option");
     option.value = item;
     option.textContent = item;
     select.appendChild(option);
   });
 }
 
-// تحديث رقم الفاتورة تلقائياً
 function updateInvoiceNumber() {
   document.getElementById("invoiceNumber").value = invoiceCounter.toString().padStart(5, "0");
 }
 
-// تسجيل الدخول
 function login() {
   const empId = document.getElementById("employeeId").value.trim();
   if (!empId) {
     alert("الرجاء إدخال الرقم الوظيفي");
     return;
   }
-  const user = users.find((u) => u.id === empId);
+  const user = users.find(u => u.id === empId);
   if (!user) {
     alert("المستخدم غير موجود");
     return;
   }
   currentUser = user;
-  document.getElementById("username").textContent = currentUser.name;
+  document.getElementById("username").textContent = user.name;
   setupDataEntrySite();
-  clearDataEntryForm();
   showSection("dashboard");
+  clearDataEntryForm();
 }
 
-// إعداد عنوان الموقع في شاشة إدخال البيانات بناءً على المستخدم
+function logout() {
+  currentUser = null;
+  showSection("login");
+}
+
 function setupDataEntrySite() {
   const title = document.getElementById("dataEntrySiteTitle");
   if (currentUser.role === "admin") {
@@ -112,294 +99,196 @@ function setupDataEntrySite() {
   }
 }
 
-// تسجيل الخروج
-function logout() {
-  currentUser = null;
-  clearLoginForm();
-  showSection("login");
+function refreshUsersTable() {
+  const tbody = document.querySelector("#usersTable tbody");
+  tbody.innerHTML = "";
+  users.forEach((u, index) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${u.id}</td>
+      <td>${u.name}</td>
+      <td>${u.role}</td>
+      <td>${u.site}</td>
+      <td><button onclick="deleteUser(${index})">حذف</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+  fillSelect("newUserSite", sites);
 }
 
-// إلغاء / غلق البرنامج (يمكن تعديلها حسب احتياجك)
-function closeProgram() {
-  if (confirm("هل تريد فعلاً إغلاق البرنامج؟")) {
-    window.close();
+function deleteUser(index) {
+  if (confirm("هل أنت متأكد من الحذف؟")) {
+    users.splice(index, 1);
+    refreshUsersTable();
   }
 }
 
-// تفريغ نموذج تسجيل الدخول
-function clearLoginForm() {
-  document.getElementById("employeeId").value = "";
-}
-
-// تفريغ نموذج إدخال البيانات
-function clearDataEntryForm() {
-  document.getElementById("phone").value = "";
-  document.getElementById("clientName").value = "";
-  document.getElementById("animalType").selectedIndex = 0;
-  document.getElementById("cuttingType").selectedIndex = 0;
-  document.getElementById("animalNumber").selectedIndex = 0;
-  document.getElementById("stickerNumber").selectedIndex = 0;
-  document.getElementById("quantity").selectedIndex = 0;
-  document.getElementById("unitPrice").value = "";
-  document.getElementById("totalPrice").value = "";
-  updateInvoiceNumber();
-}
-
-// تحديث سعر الوحدة والإجمالي بناء على الاختيارات
-function updatePrice() {
-  const animal = document.getElementById("animalType").value;
-  const cutting = document.getElementById("cuttingType").value;
-  const quantity = Number(document.getElementById("quantity").value);
-  let unitPrice = 0;
-
-  if (prices[animal] && prices[animal][cutting]) {
-    unitPrice = prices[animal][cutting];
-  }
-
-  document.getElementById("unitPrice").value = unitPrice;
-  document.getElementById("totalPrice").value = (unitPrice * quantity).toFixed(2);
-}
-
-// إضافة مستخدم جديد
 function addUser() {
   const id = document.getElementById("newUserId").value.trim();
   const name = document.getElementById("newUserName").value.trim();
   const role = document.getElementById("newUserRole").value;
   const site = document.getElementById("newUserSite").value;
 
-  if (!id || !name || !role || !site) {
-    alert("يرجى ملء كل الحقول");
+  if (!id || !name) {
+    alert("يرجى إدخال جميع البيانات");
     return;
   }
-
-  if (users.find((u) => u.id === id)) {
-    alert("الرقم الوظيفي موجود مسبقاً");
-    return;
-  }
-
   users.push({ id, name, role, site });
   refreshUsersTable();
-  clearNewUserForm();
 }
 
-// تفريغ نموذج إضافة مستخدم جديد
-function clearNewUserForm() {
-  document.getElementById("newUserId").value = "";
-  document.getElementById("newUserName").value = "";
-  document.getElementById("newUserRole").selectedIndex = 0;
-  document.getElementById("newUserSite").selectedIndex = 0;
-}
-
-// تحديث جدول المستخدمين
-function refreshUsersTable() {
-  const tbody = document.querySelector("#usersTable tbody");
-  tbody.innerHTML = "";
-
-  users.forEach((user, index) => {
-    const tr = document.createElement("tr");
-
-    tr.innerHTML = `
-      <td>${user.id}</td>
-      <td>${user.name}</td>
-      <td>${user.role === "admin" ? "مسؤول" : "مستخدم"}</td>
-      <td>${user.site}</td>
-      <td>
-        <button onclick="deleteUser(${index})" class="action-btn delete">حذف</button>
-      </td>
-    `;
-
-    tbody.appendChild(tr);
-  });
-}
-
-// حذف مستخدم
-function deleteUser(index) {
-  if (confirm("هل أنت متأكد من حذف المستخدم؟")) {
-    users.splice(index, 1);
+function addSite() {
+  const site = document.getElementById("newSite").value.trim();
+  if (site && !sites.includes(site)) {
+    sites.push(site);
+    refreshSitesList();
     refreshUsersTable();
   }
 }
 
-// إضافة موقع جديد
-function addSite() {
-  const newSite = document.getElementById("newSite").value.trim();
-  if (!newSite) {
-    alert("أدخل اسم الموقع");
-    return;
-  }
-  if (sites.includes(newSite)) {
-    alert("الموقع موجود مسبقاً");
-    return;
-  }
-  sites.push(newSite);
-  refreshSitesList();
-  setupNewUserSiteSelect();
-  document.getElementById("newSite").value = "";
-}
-
-// تحديث قائمة المواقع في الإعدادات
 function refreshSitesList() {
-  const ul = document.getElementById("sitesList");
-  ul.innerHTML = "";
-  sites.forEach((site, i) => {
+  const list = document.getElementById("sitesList");
+  list.innerHTML = "";
+  sites.forEach(s => {
     const li = document.createElement("li");
-    li.textContent = site + " ";
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "حذف";
-    delBtn.onclick = () => {
-      if (confirm("هل تريد حذف الموقع؟")) {
-        sites.splice(i, 1);
-        refreshSitesList();
-        setupNewUserSiteSelect();
-      }
-    };
-    li.appendChild(delBtn);
-    ul.appendChild(li);
+    li.textContent = s;
+    list.appendChild(li);
   });
 }
 
-// تجهيز قائمة المواقع في اختيار إضافة المستخدم
-function setupNewUserSiteSelect() {
-  fillSelect("newUserSite", sites);
-}
-
-// إضافة نوع ذبيحة جديد
 function addAnimal() {
-  const newAnimal = document.getElementById("newAnimal").value.trim();
-  if (!newAnimal) {
-    alert("أدخل نوع ذبيحة");
-    return;
+  const animal = document.getElementById("newAnimal").value.trim();
+  if (animal && !animals.includes(animal)) {
+    animals.push(animal);
+    refreshAnimalsList();
+    populateInitialData();
   }
-  if (animals.includes(newAnimal)) {
-    alert("نوع الذبيحة موجود مسبقاً");
-    return;
-  }
-  animals.push(newAnimal);
-  refreshAnimalsList();
-  populateInitialData();
-  document.getElementById("newAnimal").value = "";
 }
 
-// تحديث قائمة أنواع الذبائح
 function refreshAnimalsList() {
-  const ul = document.getElementById("animalsList");
-  ul.innerHTML = "";
-  animals.forEach((animal, i) => {
+  const list = document.getElementById("animalsList");
+  list.innerHTML = "";
+  animals.forEach(a => {
     const li = document.createElement("li");
-    li.textContent = animal + " ";
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "حذف";
-    delBtn.onclick = () => {
-      if (confirm("هل تريد حذف نوع الذبيحة؟")) {
-        animals.splice(i, 1);
-        refreshAnimalsList();
-        populateInitialData();
-      }
-    };
-    li.appendChild(delBtn);
-    ul.appendChild(li);
+    li.textContent = a;
+    list.appendChild(li);
   });
 }
 
-// إضافة نوع تقطيع جديد
 function addCutting() {
-  const newCutting = document.getElementById("newCutting").value.trim();
-  if (!newCutting) {
-    alert("أدخل نوع تقطيع");
-    return;
+  const cutting = document.getElementById("newCutting").value.trim();
+  if (cutting && !cuttings.includes(cutting)) {
+    cuttings.push(cutting);
+    refreshCuttingsList();
+    populateInitialData();
   }
-  if (cuttings.includes(newCutting)) {
-    alert("نوع التقطيع موجود مسبقاً");
-    return;
-  }
-  cuttings.push(newCutting);
-  refreshCuttingsList();
-  populateInitialData();
-  document.getElementById("newCutting").value = "";
 }
 
-// تحديث قائمة التقطيعات
 function refreshCuttingsList() {
-  const ul = document.getElementById("cuttingsList");
-  ul.innerHTML = "";
-  cuttings.forEach((cutting, i) => {
+  const list = document.getElementById("cuttingsList");
+  list.innerHTML = "";
+  cuttings.forEach(c => {
     const li = document.createElement("li");
-    li.textContent = cutting + " ";
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "حذف";
-    delBtn.onclick = () => {
-      if (confirm("هل تريد حذف نوع التقطيع؟")) {
-        cuttings.splice(i, 1);
-        refreshCuttingsList();
-        populateInitialData();
-      }
-    };
-    li.appendChild(delBtn);
-    ul.appendChild(li);
+    li.textContent = c;
+    list.appendChild(li);
   });
 }
 
-// تعيين سعر معين للذبيحة والتقطيع (خاص بالمسؤول)
-function setPrice() {
-  if (currentUser.role !== "admin") {
-    alert("غير مسموح لك بتعيين الأسعار");
-    return;
-  }
+function changeColor() {
+  const color = document.getElementById("colorPicker").value;
+  document.documentElement.style.setProperty('--main-color', color);
+  document.querySelectorAll("button").forEach(btn => btn.style.backgroundColor = color);
+}
 
+function setPrice() {
   const animal = document.getElementById("priceAnimal").value;
   const cutting = document.getElementById("priceCutting").value;
-  const priceVal = Number(document.getElementById("priceValue").value);
-
-  if (!animal || !cutting || priceVal <= 0) {
-    alert("يرجى إدخال السعر بشكل صحيح");
-    return;
-  }
-
-  if (!prices[animal]) prices[animal] = {};
-  prices[animal][cutting] = priceVal;
-
-  alert(`تم تعيين سعر ${priceVal} لـ (${animal} - ${cutting})`);
-
-  document.getElementById("priceValue").value = "";
-  updatePrice();
-}
-
-// البحث عن اسم العميل بناء على رقم الهاتف
-function lookupClient() {
-  const phone = document.getElementById("phone").value.trim();
-  if (!phone) {
-    document.getElementById("clientName").value = "";
-    return;
-  }
-  // نبحث في الفواتير القديمة
-  let found = invoices.find(inv => inv.phone === phone);
-  if (found) {
-    document.getElementById("clientName").value = found.clientName;
-  } else {
-    document.getElementById("clientName").value = "";
+  const price = parseFloat(document.getElementById("priceValue").value);
+  if (animal && cutting && price > 0) {
+    prices[`${animal}_${cutting}`] = price;
+    alert(`تم تعيين السعر: ${price}`);
   }
 }
 
-// حفظ بيانات الفاتورة
-function saveData() {
-  if (!currentUser) {
-    alert("يجب تسجيل الدخول أولاً");
-    showSection("login");
-    return;
-  }
-
-  const invoiceNo = document.getElementById("invoiceNumber").value;
-  const phone = document.getElementById("phone").value.trim();
-  const clientName = document.getElementById("clientName").value.trim();
+function updatePrice() {
   const animal = document.getElementById("animalType").value;
   const cutting = document.getElementById("cuttingType").value;
-  const animalNum = document.getElementById("animalNumber").value;
-  const stickerNum = document.getElementById("stickerNumber").value;
-  const quantity = Number(document.getElementById("quantity").value);
-  const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
-  const unitPrice = Number(document.getElementById("unitPrice").value);
-  const totalPrice = Number(document.getElementById("totalPrice").value);
-  const date = new Date();
+  const qty = parseInt(document.getElementById("quantity").value || 1);
+  const price = prices[`${animal}_${cutting}`] || 0;
+  document.getElementById("unitPrice").value = price;
+  document.getElementById("totalPrice").value = price * qty;
+}
 
-  if (!phone || !clientName || quantity <= 0 || unitPrice <= 0) {
-    alert
+function lookupClient() {
+  // يمكن إضافة منطق لاحقاً لحفظ العملاء
+}
+
+function saveData() {
+  const phone = document.getElementById("phone").value.trim();
+  const client = document.getElementById("clientName").value.trim();
+  const animal = document.getElementById("animalType").value;
+  const cutting = document.getElementById("cuttingType").value;
+  const qty = parseInt(document.getElementById("quantity").value);
+  const unitPrice = parseFloat(document.getElementById("unitPrice").value);
+  const totalPrice = parseFloat(document.getElementById("totalPrice").value);
+  const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
+
+  const invoice = {
+    site: currentUser.site || "إداري",
+    client, phone,
+    invoiceNo: invoiceCounter,
+    animal, cutting,
+    qty, unitPrice, totalPrice, paymentType,
+    date: new Date().toLocaleString("ar-EG")
+  };
+
+  invoices.push(invoice);
+  addToReport(invoice);
+  invoiceCounter++;
+  updateInvoiceNumber();
+  alert("تم حفظ الفاتورة بنجاح");
+  clearDataEntryForm();
+}
+
+function clearDataEntryForm() {
+  document.getElementById("phone").value = "";
+  document.getElementById("clientName").value = "";
+  document.getElementById("quantity").value = "1";
+  document.getElementById("unitPrice").value = "";
+  document.getElementById("totalPrice").value = "";
+}
+
+function addToReport(invoice) {
+  const tbody = document.querySelector("#reportTable tbody");
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td>${invoice.site}</td>
+    <td>${invoice.client}</td>
+    <td>${invoice.phone}</td>
+    <td>${invoice.invoiceNo}</td>
+    <td>${invoice.animal}</td>
+    <td>${invoice.cutting}</td>
+    <td>${invoice.qty}</td>
+    <td>${invoice.paymentType}</td>
+    <td>${invoice.unitPrice}</td>
+    <td>${invoice.totalPrice}</td>
+    <td>${invoice.date}</td>
+  `;
+  tbody.appendChild(tr);
+}
+
+function showInvoice() {
+  document.getElementById("invNo").textContent = document.getElementById("invoiceNumber").value;
+  document.getElementById("invClient").textContent = document.getElementById("clientName").value;
+  document.getElementById("invPhone").textContent = document.getElementById("phone").value;
+  document.getElementById("invAnimalType").textContent = document.getElementById("animalType").value;
+  document.getElementById("invCuttingType").textContent = document.getElementById("cuttingType").value;
+  document.getElementById("invQty").textContent = document.getElementById("quantity").value;
+  document.getElementById("invUnitPrice").textContent = document.getElementById("unitPrice").value;
+  document.getElementById("invTotal").textContent = document.getElementById("totalPrice").value;
+  document.getElementById("invPaymentType").textContent = document.querySelector('input[name="paymentType"]:checked').value;
+  document.getElementById("invDate").textContent = new Date().toLocaleString("ar-EG");
+
+  showSection("invoicePreview");
+}
+  
